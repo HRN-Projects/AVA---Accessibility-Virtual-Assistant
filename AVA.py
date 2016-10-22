@@ -3,7 +3,7 @@ from bs4 import *
 import speech_recognition as sr
 
 ############################################### Properties and objects for various modules ############################################################################
-Bot = "A.V.A => "
+Bot = "J.A.R.V.I.S => "
 
 engine = pyttsx.init()
 rate = engine.getProperty('rate')
@@ -12,34 +12,40 @@ engine.setProperty('rate', rate-60)
 mic_recog = sr.Recognizer()
 mic = sr.Microphone()
 
-# Arithmetic calculations -
+# Basic arithmetic calculations -
 def calc():
-    if opr==('+' or 'added' or 'plus'):
+    if (opr=='+') or (opr=='added') or (opr=='plus'):
         res = num1 + num2
         n1 = str(num1)
         n2 = str(num2)
         sol = str(res)
+        engine.say('The sum would be ' + sol)
         print (n1 + ' + ' + n2 + ' = ' + sol)
-    elif opr==('-' or 'minus' or 'subtracted'):
+    elif (opr=='-') or (opr=='minus') or (opr=='subtracted'):
         res = num1 - num2
         n1 = str(num1)
         n2 = str(num2)
         sol = str(res)
+        engine.say('The difference would be ' + sol)
         print (n1 + ' - ' + n2 + ' = ' + sol)
-    elif opr==('*' or 'into' or 'multiplied' or 'into' or 'times'):
+    elif (opr=='x') or (opr=='into') or (opr=='multiplied') or (opr=='times'):
         res = num1 * num2
         n1 = str(num1)
         n2 = str(num2)
         sol = str(res)
+        engine.say('The product would be ' + sol)
         print (n1 + ' * ' + n2 + ' = ' + sol)
-    elif opr==('/' or 'divided' or 'upon' or 'by'):
+    elif (opr=='/') or (opr=='divided') or (opr=='upon') or (opr=='by'):
         res = num1 / num2
         n1 = str(num1)
         n2 = str(num2)
         sol = str(res)
+        engine.say('The result would be ' + sol)
         print (n1 + ' / ' + n2 + ' = ' + sol)
     else:
-        print ("Only for basic arithmetic operations allowed right now...")
+        engine.say("Only four basic arithmetic operations allowed right now...")
+        print ("Only four basic arithmetic operations allowed right now...")
+    engine.runAndWait()
                                 
 # Date, Day and Time calculation methods -
 now = datetime.datetime.now()
@@ -77,7 +83,7 @@ closing = ['terminate conversation','terminate now','exit chat', 'exit now', 'te
 botcall = ['how is everything Jarvis','Jarvis how are you','how are you', 'how are you Jarvis', 'how are you doing', 'how are you doing Jarvis', 'how is everything going on',"what's up Jarvis"]
 frequest = [['what is the time right now',"what's the time right now",'what time is it right now',"what's the time", 'what time is it in the clock', 'what is the time', "what's the time now", 'what time is it now', 'tell me the time'], ["what's the date today", 'what is the date today', "today's date is", "tell me today's date", "today's date is"], ["what is today's day", "what's today's day", 'what is the day today', "today's day is", "tell me today's day"]]
 greets2 = ['hey Jarvis', 'hi Jarvis', 'hello Jarvis']
-readycheck = ['Jarvis', 'you there Jarvis', 'are you there Jarvis','Jarvis are you there', 'Jarvis you there', 'are you ready', 'Jarvis are you ready', 'you ready Jarvis', 'Jarvis you ready']
+readycheck = ['Jarvis', 'you there Jarvis', 'are you there Jarvis','jarvis are you there', 'jarvis you there', 'are you ready', 'jarvis are you ready', 'you ready Jarvis', 'jarvis you ready']
 botintro = ['who are you', "what's your name", 'who am I talking to', 'what are you', 'what is your name', 'what are you called', 'what do people call you']
 
     # Bot Replies - 
@@ -201,56 +207,68 @@ try:
                     engine.runAndWait()
                     sys.exit()
 
-                elif ('define' in comms) or (('what' and 'is') in comms) or (('who' and 'is') in comms):                # Use 'Define', 'who is' or 'what is' to find any definition online.
-                    commlist = (string.capwords(comms)).split()
-                    listlen = len(commlist)
-
-                    if (commlist[0]=='Define') or (commlist[0]=='What' and commlist[1]=='Is') or (commlist[0]=='Who' and commlist[1]=='Is'):
-                        for x in range(listlen-1):
-                            if commlist[x] in conjunctions or commlist[x] in prepositions or commlist[x] in articles:
-                                commlist[x] = commlist[x].lower()
-
-                        if commlist[0]=='Define':
-                            commlist.remove('Define')
-                        elif (commlist[0]=='What' and commlist[1]=='Is'):
-                            commlist.remove('What')
-                            commlist.remove('Is')
-                        elif (commlist[0]=='Who' and commlist[1]=='Is'):
-                            commlist.remove('Who')
-                            commlist.remove('Is')
-                            
-                        searchstr = "_".join(commlist)
-                        print searchstr
-                        try:
-                            wiki_search = ("https://en.wikipedia.org/wiki/" + searchstr)
-                            page = urllib2.urlopen(wiki_search)
-                            soup = BeautifulSoup(page, "html.parser")
-
-                            post_title = soup.find('h1', {'class' : 'firstHeading'})
-                            print ("\n" + post_title.text + ":-")
-                            engine.say(post_title.text)
-                            definition = soup.find('p')
-                            print("\t" + definition.text + "\n")
-                            engine.say(definition.text)
+                elif ('define' in comms) or (('what' and 'is') in comms) or (('who' and 'is') in comms):                    # Use 'Define', 'who is' or 'what is' to find any definition online.
+                    try:
+                        commlist = (string.capwords(comms)).split()
+                        listlen = len(commlist)
+                        if ((commlist[0]=='Define') and (listlen<=1)) or (((commlist[0]=='What' and commlist[1]=='Is') or (commlist[0]=='Who' and commlist[1]=='Is')) and (listlen<=2)):
+                            raise
                         
-                        except:
-                            engine.say("Couldn't find "  + comms)
-                            print ("Couldn't find "  + comms + "...\n")
-                            engine.runAndWait()
+                        elif (commlist[0]=='Define') or (commlist[0]=='What' and commlist[1]=='Is') or (commlist[0]=='Who' and commlist[1]=='Is'):
+                            for x in range(listlen-1):
+                                if commlist[x] in conjunctions or commlist[x] in prepositions or commlist[x] in articles:
+                                    commlist[x] = commlist[x].lower()
+
+                            if commlist[0]=='Define':
+                                commlist.remove('Define')
+                            elif (commlist[0]=='What' and commlist[1]=='Is'):
+                                commlist.remove('What')
+                                commlist.remove('Is')
+                            elif (commlist[0]=='Who' and commlist[1]=='Is'):
+                                commlist.remove('Who')
+                                commlist.remove('Is')
+                                
+                            searchstr = "_".join(commlist)
+                            print searchstr
+                            try:
+                                wiki_search = ("https://en.wikipedia.org/wiki/" + searchstr)
+                                page = urllib2.urlopen(wiki_search)
+                                soup = BeautifulSoup(page, "html.parser")
+
+                                post_title = soup.find('h1', {'class' : 'firstHeading'})
+                                print ("\n" + post_title.text + ":-")
+                                engine.say(post_title.text)
+                                definition = soup.find('p')
+                                print("\t" + definition.text + "\n")
+                                engine.say(definition.text)
+                            
+                            except:
+                                engine.say("Couldn't find "  + comms)
+                                print ("Couldn't find "  + comms + "...\n")
+                                engine.runAndWait()
+
+                    except:
+                        print ('Sorry, couldn\'t understand that...\nPlease try again...')
 
                 elif 'calculate' in comms:                                                                                                                              # 'Calculate' for calculating arithmetic operations
                     commlist = comms.split()
-                    if commlist[2]==('+' or 'subtracted' or 'added' or 'times' or 'multiplied' or 'divided' or 'into' or 'upon' or 'minus' or 'by'):
-                        opr = commlist[2]
-                        if commlist[3]==('to' or 'by' or 'with'):
-                            oprprep = commlist[3]
-                            num1 = float(commlist[1])
-                            num2 = float(commlist[4])
-                            calc()
-                        else:
-                            num1 = float(commlist[1])
-                            num2 = float(commlist[3])
-                            calc()                    
+                    try:
+                        if (commlist[2]=='+') or (commlist[2]=='subtracted') or (commlist[2]=='added') or (commlist[2]=='times') or (commlist[2]=='multiplied') or (commlist[2]=='divided') or (commlist[2]=='into') or (commlist[2]=='upon') or (commlist[2]=='minus') or (commlist[2]=='by') or (commlist[2]=='x') or (commlist[2]=='-') or (commlist[2]=='/'):
+                            global opr
+                            opr = commlist[2]
+                            if (commlist[3]=='to') or (commlist[3]=='by') or (commlist[3]=='with'):
+                                oprprep = commlist[3]
+                                num1 = float(commlist[1])
+                                num2 = float(commlist[4])
+                                calc()
+                            else:
+                                num1 = float(commlist[1])
+                                num2 = float(commlist[3])
+                                calc()
+                    
+                    except:
+                        print ('Sorry, couldn\'t understand that...\nPlease try again...')
+                        
                 else:
                     print(Bot + "You said : '" + comms + "'\n")
                     
