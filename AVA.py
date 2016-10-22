@@ -20,28 +20,28 @@ def calc():
         n2 = str(num2)
         sol = str(res)
         engine.say('The sum would be ' + sol)
-        print (n1 + ' + ' + n2 + ' = ' + sol)
+        print (Bot + n1 + ' + ' + n2 + ' = ' + sol)
     elif (opr=='-') or (opr=='minus') or (opr=='subtracted'):
         res = num1 - num2
         n1 = str(num1)
         n2 = str(num2)
         sol = str(res)
         engine.say('The difference would be ' + sol)
-        print (n1 + ' - ' + n2 + ' = ' + sol)
+        print (Bot + n1 + ' - ' + n2 + ' = ' + sol)
     elif (opr=='x') or (opr=='into') or (opr=='multiplied') or (opr=='times'):
         res = num1 * num2
         n1 = str(num1)
         n2 = str(num2)
         sol = str(res)
         engine.say('The product would be ' + sol)
-        print (n1 + ' * ' + n2 + ' = ' + sol)
+        print (Bot + n1 + ' x ' + n2 + ' = ' + sol)
     elif (opr=='/') or (opr=='divided') or (opr=='upon') or (opr=='by'):
         res = num1 / num2
         n1 = str(num1)
         n2 = str(num2)
         sol = str(res)
         engine.say('The result would be ' + sol)
-        print (n1 + ' / ' + n2 + ' = ' + sol)
+        print (Bot + n1 + ' / ' + n2 + ' = ' + sol)
     else:
         engine.say("Only four basic arithmetic operations allowed right now...")
         print ("Only four basic arithmetic operations allowed right now...")
