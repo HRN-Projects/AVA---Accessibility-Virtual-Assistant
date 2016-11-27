@@ -29,7 +29,7 @@ byes = ['until next time', 'bye bye', 'see you soon', 'chao', 'goodbye', 'catch 
 introans = ['I am Jarvis, your virtual personal assistant', 'They call me "Jarvis"', 'People call me "Jarvis"', 'My name is Jarvis']
 readyans = ['I am online and ready...', 'Ready', 'Up and running...', 'Always ready to help and assist...']
 projectDetails = "AVA (Accessibility Virtual Assistant) is a virtual assistant developed for better accessiblity and interactivity in an open source environment. This vitual assistant is used to perform some regular tasks like - Getting Date, Time or Day, Simple arithmetic calculations, and Even searching almost anything on internet. These tasks can be performed just by using some voice commands. The project is developed in python."
-
+webSearch = ['found something...','This is what I found...', 'Here is what I found on the Internet...', 'Here is what I found...', 'Found something...', 'I got this on the Internet...']
 ############################################### Properties and objects for various modules ############################################################################
 Bot = "J.A.R.V.I.S "
 
@@ -86,13 +86,6 @@ class guiWindow(QtGui.QMainWindow):
         self.prnt()
         self.show()
         
-    """def closebtn(self):
-        btn = QtGui.QPushButton("Close Window", self)
-        btn.setStyleSheet('QPushButton {background-color: #0033cc; color: white; font-weight: bold; font-size: 18px;}')
-        btn.clicked.connect(QtCore.QCoreApplication.instance().quit)
-        btn.setGeometry(0,350,600,50)
-        btn.show()"""
-
     def prnt(self):
         btn1 = QtGui.QPushButton("Start !", self)
         btn1.setStyleSheet('QPushButton {background-color: #ff7733; color: white; font-weight: bold; font-size: 14px;}')
@@ -115,11 +108,13 @@ class guiWindow(QtGui.QMainWindow):
             
             while True:
                 txt.verticalScrollBar().setValue(txt.verticalScrollBar().maximum())
+
                 quest = random.choice(compos)
                 engine.say(quest)
                 txt.insertPlainText("\n\n" + quest + " : \n")
                 engine.runAndWait()
                 txt.verticalScrollBar().setValue(txt.verticalScrollBar().maximum())
+
                 with mic as source: audio = mic_recog.listen(source)
                 process = ("Processing...\n")
                 txt.insertPlainText(process)
@@ -127,6 +122,7 @@ class guiWindow(QtGui.QMainWindow):
                 while self.completed<100:
                     self.completed += 0.001
                     self.process.setValue(self.completed)
+
                 try:
                     value = mic_recog.recognize_google(audio)
 
@@ -153,7 +149,7 @@ class guiWindow(QtGui.QMainWindow):
                             engine.say(reply)
                             txt.insertPlainText( Bot + " :\n" + reply + "\n")
 
-                            print("Greeting commands -")
+                            txt.insertPlainText("Greeting commands -")
                             for i in range(8):
                                 reply = greets[i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
@@ -162,17 +158,17 @@ class guiWindow(QtGui.QMainWindow):
                                 reply = greets2[i]                                
                                 txt.insertPlainText( "\t-> " + reply + "\n")
                                 
-                            print("\nIntroductory commands -")
+                            txt.insertPlainText("\nIntroductory commands -")
                             for i in range(7):
                                 reply = botintro[i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
 
-                            print("\nClosing commands -")
+                            txt.insertPlainText("\nClosing commands -")
                             for i in range(12):
                                 reply = closing[i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
 
-                            print("\nInteraction commands -")
+                            txt.insertPlainText("\nInteraction commands -")
                             for i in range(5):
                                 reply = botcall[i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
@@ -181,7 +177,7 @@ class guiWindow(QtGui.QMainWindow):
                                 reply = readycheck[i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
 
-                            print("\nTime, Date and Day commands -")
+                            txt.insertPlainText("\nTime, Date and Day commands -")
                             for i in range(9):
                                 reply = frequest[0][i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
@@ -194,14 +190,10 @@ class guiWindow(QtGui.QMainWindow):
                                 reply = frequest[2][i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
                                 
-                            print("\n Project info commands -")
+                            txt.insertPlainText("\n Project info commands -")
                             for i in range(6):
                                 reply = info[i]
                                 txt.insertPlainText( "\t->" + reply + "\n")
-                            
-                            for i in range(5):
-                                reply = teamcom[i]
-                                txt.insertPlainText( "\t-> " + reply + "\n")
 
                             txt.insertPlainText("\n##### END OF COMMANDS #####\n")
                             engine.runAndWait()
@@ -267,26 +259,26 @@ class guiWindow(QtGui.QMainWindow):
                                         commlist.remove('Who')
                                         commlist.remove('Is')
                                         
-                                    searchstr = "_".join(commlist)
+                                    searchstr = commlist
                                     try:
+                                        searchstr = "_".join(commlist)
                                         txt.verticalScrollBar().setValue(txt.verticalScrollBar().maximum())
                                         wiki_search = ("https://en.wikipedia.org/wiki/" + searchstr)
                                         page = urllib2.urlopen(wiki_search)
                                         soup = BeautifulSoup(page, "html.parser")
-
                                         reply = soup.find('h1', {'class' : 'firstHeading'})
                                         txt.insertPlainText ( "\n" + reply.text + ":-\n")
-                                        engine.say(reply.text)
                                         reply = soup.find('p')
                                         txt.insertPlainText( "\t" + reply.text + "\n")
                                         engine.say(reply.text)
                                     
                                     except:
-                                        reply = comms
-                                        engine.say("Couldn't find "  + reply)                                        
-                                        txt.insertPlainText( "Couldn't find "  + reply + "...\n")
-                                        engine.runAndWait()
-
+                                        searchstr = commlist
+                                        search = random.choice(webSearch)
+                                        engine.say(search + "about" + searchstr)
+                                        searchstr = "+".join(searchstr)
+                                        webbrowser.open('http://www.google.com/search?q=' + searchstr)
+                                        
                             except:                                
                                 txt.insertPlainText( 'Sorry, couldn\'t understand that...\nPlease try again...')
 
@@ -384,6 +376,9 @@ class guiWindow(QtGui.QMainWindow):
                     engine.runAndWait()
                     sys.exit()
 
+                finally:
+                    txt.verticalScrollBar().setValue(txt.verticalScrollBar().maximum())
+                    
         except KeyboardInterrupt:
             pass
         
