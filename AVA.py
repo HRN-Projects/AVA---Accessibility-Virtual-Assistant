@@ -1,3 +1,12 @@
+"""
+
+    Author - Harshwardhan Natu
+    Python - Python 2.7.12
+    PyQt   - PyQt4 (4.11.4)
+    BeautifulSoup - bs4
+
+"""
+
 import sys, math, random, pyttsx, webbrowser, datetime, time, urllib2, string
 from bs4 import *
 import speech_recognition as sr
@@ -30,7 +39,9 @@ introans = ['I am Jarvis, your virtual personal assistant', 'They call me "Jarvi
 readyans = ['I am online and ready...', 'Ready', 'Up and running...', 'Always ready to help and assist...']
 projectDetails = "AVA (Accessibility Virtual Assistant) is a virtual assistant developed for better accessiblity and interactivity in an open source environment. This vitual assistant is used to perform some regular tasks like - Getting Date, Time or Day, Simple arithmetic calculations, and Even searching almost anything on internet. These tasks can be performed just by using some voice commands. The project is developed in python."
 webSearch = ['found something...','This is what I found...', 'Here is what I found on the Internet...', 'Here is what I found...', 'Found something...', 'I got this on the Internet...']
+
 ############################################### Properties and objects for various modules ############################################################################
+
 Bot = "J.A.R.V.I.S "
 
 engine = pyttsx.init()
@@ -41,6 +52,7 @@ mic_recog = sr.Recognizer()
 mic = sr.Microphone()
                                 
 ############################################################ Date, Day and Time calculation methods #####################################################################
+
 now = datetime.datetime.now()
 t1 = ''
 
@@ -67,7 +79,7 @@ class guiWindow(QtGui.QMainWindow):
     def __init__(self):
         super(guiWindow, self).__init__()
         self.setGeometry(300,150,750,500)
-        self.setWindowTitle("PyQt Gui test Window")
+        self.setWindowTitle("Accessibility Virtual Assistant")
         self.setWindowIcon(QtGui.QIcon("bgimg.jpg"))
         self.setStyleSheet('background-color: #ffff66;')
         self.setFixedSize(750,500)
@@ -138,7 +150,7 @@ class guiWindow(QtGui.QMainWindow):
                             txt.insertPlainText( Bot+ " :\n" + reply.capitalize() + "!\n")
                             engine.runAndWait()
                             
-                        if comms in info:
+                        elif comms in info:
                             reply = projectDetails
                             engine.say(reply)
                             txt.insertPlainText(Bot + " :\n" + reply + "\n")
@@ -149,7 +161,7 @@ class guiWindow(QtGui.QMainWindow):
                             engine.say(reply)
                             txt.insertPlainText( Bot + " :\n" + reply + "\n")
 
-                            txt.insertPlainText("Greeting commands -")
+                            txt.insertPlainText("Greeting commands -\n")
                             for i in range(8):
                                 reply = greets[i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
@@ -158,17 +170,17 @@ class guiWindow(QtGui.QMainWindow):
                                 reply = greets2[i]                                
                                 txt.insertPlainText( "\t-> " + reply + "\n")
                                 
-                            txt.insertPlainText("\nIntroductory commands -")
+                            txt.insertPlainText("\nIntroductory commands -\n")
                             for i in range(7):
                                 reply = botintro[i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
 
-                            txt.insertPlainText("\nClosing commands -")
+                            txt.insertPlainText("\nClosing commands -\n")
                             for i in range(12):
                                 reply = closing[i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
 
-                            txt.insertPlainText("\nInteraction commands -")
+                            txt.insertPlainText("\nInteraction commands -\n")
                             for i in range(5):
                                 reply = botcall[i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
@@ -177,7 +189,7 @@ class guiWindow(QtGui.QMainWindow):
                                 reply = readycheck[i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
 
-                            txt.insertPlainText("\nTime, Date and Day commands -")
+                            txt.insertPlainText("\nTime, Date and Day commands -\n")
                             for i in range(9):
                                 reply = frequest[0][i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
@@ -190,7 +202,7 @@ class guiWindow(QtGui.QMainWindow):
                                 reply = frequest[2][i]
                                 txt.insertPlainText( "\t-> " + reply + "\n")
                                 
-                            txt.insertPlainText("\n Project info commands -")
+                            txt.insertPlainText("\n Project info commands -\n")
                             for i in range(6):
                                 reply = info[i]
                                 txt.insertPlainText( "\t->" + reply + "\n")
@@ -275,13 +287,17 @@ class guiWindow(QtGui.QMainWindow):
                                     except:
                                         searchstr = commlist
                                         search = random.choice(webSearch)
-                                        engine.say(search + "about" + searchstr)
+                                        engine.say(search + "about" + comms)
                                         searchstr = "+".join(searchstr)
                                         webbrowser.open('http://www.google.com/search?q=' + searchstr)
                                         
-                            except:                                
-                                txt.insertPlainText( 'Sorry, couldn\'t understand that...\nPlease try again...')
-
+                            except:
+                                        searchstr = commlist
+                                        search = random.choice(webSearch)
+                                        searchstr = "+".join(searchstr)
+                                        engine.say(search + "about" + comms)
+                                        webbrowser.open('http://www.google.com/search?q=' + searchstr)
+ 
                         elif 'calculate' in comms:                                                                                                                              # 'Calculate' for calculating arithmetic operations
                             commlist = comms.split()
                             try:
