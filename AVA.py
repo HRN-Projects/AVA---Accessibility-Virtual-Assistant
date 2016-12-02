@@ -1,12 +1,3 @@
-"""
-
-    Author - Harshwardhan Natu
-    Python - Python 2.7.12
-    PyQt   - PyQt4 (4.11.4)
-    BeautifulSoup - bs4
-
-"""
-
 import sys, math, random, pyttsx, webbrowser, datetime, time, urllib2, string
 from bs4 import *
 import speech_recognition as sr
@@ -404,3 +395,12 @@ def run():
     sys.exit(app.exec_())
 
 run()
+
+"""
+
+    Author - Harshwardhan Natu
+    Python - Python 2.7.12
+    PyQt   - PyQt4 (4.11.4)
+    BeautifulSoup - bs4
+
+"""
