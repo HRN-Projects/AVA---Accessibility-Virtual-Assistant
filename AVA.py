@@ -27,7 +27,7 @@ mExtTypes = [['.mp3', '.wav', '.wma', '.m4a', '.xspf'],
 
 # Conversation lists :-
 
-greets = ['hi', 'hello', 'hello there', 'hi there', 'hey', 'hey there', 'namaste', 'hola']
+greets = ['hi', 'hello', 'hello there', 'hi there', 'hey', 'hey there', 'namaste', 'hola','Howdy']
 
 # Questions / Queries -
 toggleListening = [
@@ -576,11 +576,8 @@ class guiWindow(QtGui.QMainWindow):
                             try:
                                 commlist = (string.capwords(comms)).split()
                                 listlen = len(commlist)
-                                if (((commlist[0] == 'Define') or (commlist[0] == 'Search')) and (listlen <= 1)) or (((
-                                                                                                                              commlist[
-                                                                                                                                  0] == 'What' and
-                                                                                                                              commlist[
-                                                                                                                                  1] == 'Is') or (
+                                if (((commlist[0] == 'Define') or (commlist[0] == 'Search')) and (listlen <= 1)) or (
+                                      ((commlist[0] == 'What' and commlist[1] == 'Is') or (
                                         commlist[0] == 'Who' and commlist[1] == 'Is') or (
                                         commlist[0] == 'Search' and commlist[1] == 'For')) and (listlen <= 2)):
                                     raise
@@ -716,9 +713,7 @@ class guiWindow(QtGui.QMainWindow):
 
                     else:  # For Python 3.x
                         comms = ("{}".format(value))
-                        u = "You"
-                        reply = "\n" + u + " : " + comms + "  \n"
-                        txt.insertPlainText(reply)
+                        print("You -> " + comms)
                         # Starts checking for the reply from here
                         if comms in greets or comms in greets2:  # If Command was a greeting
                             reply = random.choice(greets)
@@ -824,8 +819,7 @@ class guiWindow(QtGui.QMainWindow):
                         elif comms in weatherRep:  # Command to get 'weather' information for current location of execution
                             getLocalWeather()
 
-                        elif any(comms in subl for subl in automateKBoard) or (
-                            comms in typeMode):  # Automate keyboard keys and shortcuts
+                        elif (comms in automateKBoard) or (comms in typeMode):  # Automate keyboard keys and shortcuts
                             keyBoardAutomater(comms)
 
                         elif comms in whereAbouts:  # Automatically locate the location of execution
@@ -852,12 +846,6 @@ class guiWindow(QtGui.QMainWindow):
                             playMedia(mFilename, mPath)
 
                             try:
-                                global playMFile
-
-                                if ('playMFile' in globals()) and (playMFile != None):
-                                    playMFile.stop()
-                                    playMFile = ''
-
                                 playMFile = vlc.MediaPlayer(mediaName)
                                 playMFile.play()
                             except:
@@ -879,10 +867,7 @@ class guiWindow(QtGui.QMainWindow):
                                 commlist = (string.capwords(comms)).split()
                                 listlen = len(commlist)
                                 if (((commlist[0] == 'Define') or (commlist[0] == 'Search')) and (listlen <= 1)) or (((
-                                                                                                                              commlist[
-                                                                                                                                  0] == 'What' and
-                                                                                                                              commlist[
-                                                                                                                                  1] == 'Is') or (
+                                        commlist[0] == 'What' and commlist[1] == 'Is') or (
                                         commlist[0] == 'Who' and commlist[1] == 'Is') or (
                                         commlist[0] == 'Search' and commlist[1] == 'For')) and (listlen <= 2)):
                                     raise
@@ -1017,10 +1002,10 @@ class guiWindow(QtGui.QMainWindow):
                             txt.insertPlainText(Bot + " =>\n" + "You said : '" + comms + "'\n")
 
                 except sr.UnknownValueError as e:
-                    txt.insertPlainText('Sorry, couldn\'t understand that... Please try again...')
+                    txt.insertPlainText('Sorry, couldn\'t understand that... \nPlease try again...')
 
                 except sr.RequestError as e:
-                    reply = "Sorry, can't process at this time... Check your internet connection...\nTerminating the program...\n"
+                    reply = "Sorry, can't process at this time... \nCheck your internet connection...\n\nTerminating the program...\n"
                     engine.say(reply)
                     txt.insertPlainText(reply)
                     engine.runAndWait()
