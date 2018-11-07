@@ -16,7 +16,7 @@ PyAudio==0.2.9
 Pygments==2.1.3
 pyttsx==1.1
 pywin32==220
-requests==2.11.1
+requests==2.20.0
 scipy==0.18.1
 simplegeneric==0.8.1
 six==1.10.0
