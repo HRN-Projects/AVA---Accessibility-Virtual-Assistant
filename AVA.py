@@ -436,48 +436,48 @@ class guiWindow(QtGui.QMainWindow):
                             txt.insertPlainText(Bot + " : " + reply + "\n")
 
                             txt.insertPlainText("Greeting commands -\n")
-                            for i in range(8):
+                            for i in range(len(greets)):
                                 reply = greets[i]
                                 txt.insertPlainText("\t-> " + reply + "\n")
 
-                            for i in range(3):
+                            for i in range(len(greets2)):
                                 reply = greets2[i]
                                 txt.insertPlainText("\t-> " + reply + "\n")
 
                             txt.insertPlainText("\nIntroductory commands -\n")
-                            for i in range(7):
+                            for i in range(len(botintro)):
                                 reply = botintro[i]
                                 txt.insertPlainText("\t-> " + reply + "\n")
 
                             txt.insertPlainText("\nClosing commands -\n")
-                            for i in range(12):
+                            for i in range(len(closing)):
                                 reply = closing[i]
                                 txt.insertPlainText("\t-> " + reply + "\n")
 
                             txt.insertPlainText("\nInteraction commands -\n")
-                            for i in range(5):
+                            for i in range(len(botcall)):
                                 reply = botcall[i]
                                 txt.insertPlainText("\t-> " + reply + "\n")
 
-                            for i in range(9):
+                            for i in range(len(readycheck)):
                                 reply = readycheck[i]
                                 txt.insertPlainText("\t-> " + reply + "\n")
 
                             txt.insertPlainText("\nTime, Date and Day commands -\n")
-                            for i in range(9):
+                            for i in range(len(frequest[0])):
                                 reply = frequest[0][i]
                                 txt.insertPlainText("\t-> " + reply + "\n")
 
-                            for i in range(5):
+                            for i in range(len(frequest[1])):
                                 reply = frequest[1][i]
                                 txt.insertPlainText("\t-> " + reply + "\n")
 
-                            for i in range(5):
+                            for i in range(len(frequest[2])):
                                 reply = frequest[2][i]
                                 txt.insertPlainText("\t-> " + reply + "\n")
 
                             txt.insertPlainText("\n Project info commands -\n")
-                            for i in range(6):
+                            for i in range(len(info)):
                                 reply = info[i]
                                 txt.insertPlainText("\t->" + reply + "\n")
 
