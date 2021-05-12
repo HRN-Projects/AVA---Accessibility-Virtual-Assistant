@@ -13,7 +13,7 @@ pathlib2==2.1.0
 pickleshare==0.7.4
 prompt-toolkit==1.0.7
 PyAudio==0.2.9
-Pygments==2.1.3
+Pygments==2.7.4
 pyttsx==1.1
 pywin32==220
 requests==2.20.0
