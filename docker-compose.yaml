@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+
+  ava:
+    init: true
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    extra_hosts:
+      - "localhost:127.0.0.1"
+    environment:
+      - "HOST_MACHINE=host.docker.internal"
+      - "PYTHONUNBUFFERED=1"

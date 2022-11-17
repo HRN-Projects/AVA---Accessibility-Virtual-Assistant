@@ -4,15 +4,16 @@ import random
 import re
 import string
 import sys
-import time
 import webbrowser
 import pyautogui
 import pyttsx3
 import requests
 import speech_recognition as sr
 import vlc
+import psutil
 from datetime import datetime
 from bs4 import *
+from itertools import chain
 
 
 class ava:
@@ -92,6 +93,7 @@ class ava:
                               ['pause', 'hold it', 'pause media', 'pause that'],
                               ['stop', 'stop playing', 'stop media', 'close media']]
         self.mMediaType = [['song', 'music'], ['video', 'visual'], ['movie', 'film']]
+        self.power_check = [["how's the battery level", "what's the power level", 'what is current battery percentage', 'what is current power level', 'power status'], ["time left for full discharge", "time left on battery", "battery"], ['is battery charging']]
         self.automateKBoard = [
             ['close', 'close that', 'close the program', 'close active window', 'close this program', 'close this'],
             ['new tab', 'open new tab', 'start new tab', 'open in new tab', 'make new tab', 'start in new tab'],
@@ -115,21 +117,17 @@ class ava:
             ['control', 'left control', 'control button', 'control key', 'left control key', 'left control button',
              'press control key', 'press control button', 'press left control key', 'press left control button'],
             ['alter', 'left alter', 'press left alter', 'press alter', 'alter key', 'left alter key', 'alter button',
-             'left alter button', 'press alter key', 'press alter button', 'press left alter key',
-             'press left alter button'],
-            ['right alter', 'right alter key', 'right alter button', 'press right alter', 'press right alter key',
-             'press right alter button'],
-            ['right control', 'right control key', 'right control button', 'press right control',
-             'press right control key', 'press right control button'],
+             'left alter button', 'press alter key', 'press alter button', 'press left alter key', 'press left alter button'],
+            ['right alter', 'right alter key', 'right alter button', 'press right alter', 'press right alter key', 'press right alter button'],
+            ['right control', 'right control key', 'right control button', 'press right control', 'press right control key', 'press right control button'],
             ['escape', 'press escape', 'escape key', 'escape button', 'press escape key', 'press escape button'],
-            ['page up', 'page up key', 'scroll down', 'scroll right', 'page up button', 'press page up',
-             'press page up key', 'press page up button'],
-            ['page down', 'page down key', 'scroll up', 'scroll left', 'page down button', 'press page down',
-             'press page down key', 'press page down button'],
-            ['space', 'space bar', 'space bar key', 'space bar button', 'press space bar', 'press space bar key',
-             'press space bar button'],
+            ['page up', 'page up key', 'scroll down', 'scroll right', 'page up button', 'press page up', 'press page up key', 'press page up button'],
+            ['page down', 'page down key', 'scroll up', 'scroll left', 'page down button', 'press page down', 'press page down key', 'press page down button'],
+            ['space', 'space bar', 'space bar key', 'space bar button', 'press space bar', 'press space bar key', 'press space bar button'],
             ['screenshot', 'new screenshot', 'take screenshot', 'create screenshot', 'click a screenshot',
-             'get screenshot', 'get a screenshot', 'click screenshot']]
+             'get screenshot', 'get a screenshot', 'click screenshot'],
+            ['switch tab', 'next tab']
+        ]
 
         # self.botname Replies -
         self.botans = ['I am fine...', 'I am doing great...', "I'm fine, thank you...",
@@ -155,8 +153,7 @@ class ava:
         self.engine.runAndWait()
 
     # Listener toggle -
-    def listenToggle(self,
-                     command):  # Function to toggle the 'listening' of the program (from 'listening' to 'not listening' or vice versa)
+    def listen_toggle(self, command):  # Function to toggle the 'listening' of the program (from 'listening' to 'not listening' or vice versa)
         if command in self.toggleListening[1]:
             while True:
                 with self.mic as source:
@@ -180,16 +177,16 @@ class ava:
 
     # Play Multimedia -
     # Function to handle multimedia files - Songs, Videos or Movies From predefined paths
-    def playMedia(self, mName, mFilePath):
+    def play_media(self, m_name, m_filepath):
         mediaFilePath = None
-        for root, dirs, files in os.walk(mFilePath):
+        for root, dirs, files in os.walk(m_filepath):
             if mediaFilePath:
                 break
             for fileFound in files:
-                curFile = re.sub('\s+', ' ', re.sub('[^A-Za-z0-9.\s\']', ' ', fileFound))
-                if mName.lower() in curFile.lower():
+                curFile = re.sub("\s+", ' ', re.sub('[^A-Za-z0-9.\s\']', ' ', fileFound))
+                if m_name.lower() in curFile.lower():
                     mFileExt = os.path.splitext(fileFound)
-                    if mFileExt[1] in self.mExtTypes[0]:
+                    if mFileExt[1] in chain(*self.mExtTypes):
                         mediaFilePath = os.path.join(root, fileFound)
                         break
         return mediaFilePath
@@ -232,7 +229,7 @@ class ava:
                     elif typeData in self.specialChars:
                         pyautogui.typewrite(typeData)
                     else:
-                        pyautogui.typewrite((typeData), interval=0.05)
+                        pyautogui.typewrite(typeData, interval=0.05)
 
                 else:
                     typeData = ("{}".format(value))
@@ -291,6 +288,8 @@ class ava:
             pyautogui.hotkey('space')
         elif inputCommand in self.automateKBoard[19]:
             pyautogui.hotkey('win', 'prtscr')
+        elif inputCommand in self.automateKBoard[20]:
+            pyautogui.hotkey('altleft', 'tab')
         elif inputCommand == self.typeMode[0]:
             self.getTypeData()
 
@@ -308,11 +307,10 @@ class ava:
         location_zip = location['zip']
         reply = "Your current location is : %s, %s, %s." % (location_city, location_state, location_country)
         self.botspeak(reply)
-        print(self.botname + " : " + reply + "\n")
+        print(f"{self.botname}: {reply}\n")
 
     # Weather conditions based on current location :-
-    def getLocalWeather(
-            self):  # Function to gather local weather (temperature) information based on the autolocated geographic location.
+    def getLocalWeather(self):  # Function to gather local weather (temperature) information based on the autolocated geographic location.
         # Automatically geolocate the connecting IP
         f = requests.get('http://ip-api.com/json/')
         json_string = f.text
@@ -334,13 +332,22 @@ class ava:
         degSym = u'\xb0'
         reply = ("Current temperature in %s is: %s " + degSym + "C, with %s weather.") % (location, temp_c, weatherType)
         self.botspeak(reply)
-        print(self.botname + " : " + reply + "\n")
+        print(f"{self.botname}:{reply}\n")
         f.close()
 
     def timing(self):
         reply = ("Current time is " + str(datetime.strftime(datetime.now(), "%I:%M:%S %p")))
         self.botspeak(reply)
-        print(self.botname + " :\nTime is : " + reply + "\n")
+        print(f"{self.botname}: Time is {reply}\n")
+
+    def power_status(self):
+        battery = psutil.sensors_battery()
+        status = {
+            "plugged": battery.power_plugged,
+            "percent": str(battery.percent),
+            "time_left": battery.secsleft
+        }
+        return status
 
     # Main program body :-
     def ava(self):
@@ -348,7 +355,7 @@ class ava:
             while True:
                 quest = random.choice(self.compos)
                 self.botspeak(quest)
-                print("\n\n" + quest + " : \n")
+                print(f"\n{quest}")
 
                 with self.mic as source:
                     self.mic_recog.adjust_for_ambient_noise(source)
@@ -357,119 +364,131 @@ class ava:
 
                 try:
                     value = self.mic_recog.recognize_google(audio)
-                    comms = ("{}".format(value))
-                    print("You -> " + comms)
+                    comms = value
+                    print(f"You -> {comms}")
                     # Starts checking for the reply from here
                     if comms in self.greets or comms in self.greets2:  # If Command was a greeting
                         reply = random.choice(self.greets)
                         self.botspeak(reply)
-                        print(self.botname + " : " + reply.capitalize() + "!\n")
+                        print(f"{self.botname} : {reply.capitalize()}\n")
 
                     elif comms in self.info:
                         reply = self.projectDetails
                         self.botspeak(reply)
-                        print(self.botname + " : " + reply + "\n")
+                        print(f"{self.botname} : {reply}\n")
 
                     elif comms in self.helpcom:  # If command was to list all available commands
                         reply = "Following commands are stored for interaction and usage right now..."
                         self.botspeak(reply)
-                        print(self.botname + " : " + reply + "\n")
+                        print(f"{self.botname} : {reply}\n")
 
                         print("Greeting commands -\n")
                         for i in range(8):
                             reply = self.greets[i]
-                            print("\t-> " + reply + "\n")
+                            print(f"\t-> {reply}\n")
 
                         for i in range(3):
                             reply = self.greets2[i]
-                            print("\t-> " + reply + "\n")
+                            print(f"\t-> {reply}\n")
 
                         print("\nIntroductory commands -\n")
                         for i in range(7):
                             reply = self.botintro[i]
-                            print("\t-> " + reply + "\n")
+                            print(f"\t-> {reply}\n")
 
                         print("\nClosing commands -\n")
                         for i in range(12):
                             reply = self.closing[i]
-                            print("\t-> " + reply + "\n")
+                            print(f"\t-> {reply}\n")
 
                         print("\nInteraction commands -\n")
                         for i in range(5):
                             reply = self.botcall[i]
-                            print("\t-> " + reply + "\n")
+                            print(f"\t-> {reply}\n")
 
                         for i in range(9):
                             reply = self.readycheck[i]
-                            print("\t-> " + reply + "\n")
+                            print(f"\t-> {reply}\n")
 
                         print("\nTime, Date and Day commands -\n")
                         for i in range(9):
                             reply = self.frequest[0][i]
-                            print("\t-> " + reply + "\n")
+                            print(f"\t-> {reply}\n")
 
                         for i in range(5):
                             reply = self.frequest[1][i]
-                            print("\t-> " + reply + "\n")
+                            print(f"\t-> {reply}\n")
 
                         for i in range(5):
                             reply = self.frequest[2][i]
-                            print("\t-> " + reply + "\n")
+                            print(f"\t-> {reply}\n")
 
                         print("\n Project info commands -\n")
                         for i in range(6):
                             reply = self.info[i]
-                            print("\t->" + reply + "\n")
+                            print(f"\t-> {reply}\n")
 
                         print("\n##### END OF COMMANDS #####\n")
 
                     elif comms in self.botintro:  # Commands for bot intro
                         reply = random.choice(self.introans)
                         self.botspeak(reply)
-                        print(self.botname + " : " + reply)
+                        print(f"{self.botname} : {reply}")
 
                     elif comms in self.botcall:  # Interactive commands
                         reply = random.choice(self.botans)
                         self.botspeak(reply)
-                        print(self.botname + " : " + reply)
+                        print(f"{self.botname} : {reply}")
 
                     elif comms in self.readycheck:  # Interactive commands
                         reply = random.choice(self.readyans)
                         self.botspeak(reply)
-                        print(self.botname + " : " + reply)
+                        print(f"{self.botname} : {reply}")
 
-                    elif comms in self.frequest[0]:  # Commands to know - Time, Date or Day.
-                        self.timing()
-
-                    elif comms in self.frequest[1]:
-                        reply = self.date
-                        self.botspeak("Today's date is " + reply)
-                        print(self.botname + " : " + "today's date is : " + reply + "\n")
-
-                    elif comms in self.frequest[2]:
-                        reply = self.day
-                        self.botspeak("The day today is : " + reply)
-                        print(self.botname + " : " + "The day today is - " + reply + "\n")
+                    elif comms in chain(*self.frequest):
+                        for idx, lst in enumerate(self.frequest):
+                            if comms in lst:
+                                if idx == 0:
+                                    self.timing()
+                                elif idx == 1:
+                                    reply = self.date
+                                    stmt = f"Today's date is {reply}"
+                                    self.botspeak(stmt)
+                                    print(f"{self.botname} : {stmt}\n")
+                                else:
+                                    reply = self.day
+                                    stmt = f"The day today is : {reply}"
+                                    self.botspeak(stmt)
+                                    print(f"{self.botname} : {stmt}\n")
+                                break
 
                     elif comms in self.toggleListening[1]:
-                        self.listenToggle(comms)
+                        self.listen_toggle(comms)
 
                     elif comms in self.weatherRep:  # Command to get 'weather' information for current location of execution
                         self.getLocalWeather()
 
-                    elif (comms in self.automateKBoard) or (
+                    elif comms in chain(*self.power_check):
+                        power_levels = self.power_status()
+                        for idx, lst in self.power_check:
+                            if comms in lst:
+                                if idx == 0:
+                                    reply = power_levels['percent']
+                                    self.botspeak(f"Current battery percentage is {reply}")
+                                    print(f"{self.botname}: Current battery percentage is '{reply}'")
+                                break
+
+                    elif (comms in chain(*self.automateKBoard)) or (
                             comms in self.typeMode):  # Automate keyboard keys and shortcuts
                         self.keyBoardAutomater(comms)
 
                     elif comms in self.whereAbouts:  # Automatically locate the location of execution
                         self.getLoc()
 
-                    elif (comms in self.mPlayerToggle[0]) or (comms in self.mPlayerToggle[1]) or (
-                            comms in self.mPlayerToggle[2]):
+                    elif comms in chain(*self.mPlayerToggle):
                         self.mMediaToggle(comms)
 
-                    elif comms.startswith(
-                            'play'):  # Condition for playing or starting a multimedia file (Song/Video/Music)
+                    elif comms.startswith('play'):  # Condition for playing or starting a multimedia file (Song/Video/Music)
                         mTypeGetter = comms.split()
                         mPath = ''
                         if (mTypeGetter[0] == 'play') and (mTypeGetter[1] in self.mMediaType[0]):
@@ -482,7 +501,7 @@ class ava:
                             mTypeGetter.remove(mTypeGetter[0])
                         mTypeGetter = " ".join(mTypeGetter)
                         mFilename = mTypeGetter
-                        mediaFilePath = self.playMedia(mFilename, mPath)
+                        mediaFilePath = self.play_media(mFilename, mPath)
 
                         if mediaFilePath:
                             try:
@@ -498,7 +517,7 @@ class ava:
                         reply = random.choice(self.byes)
                         self.botspeak(reply)
 
-                        print(self.botname + " : " + reply.capitalize() + "...\n")
+                        print(f"{self.botname}: {reply.capitalize()}...\n")
                         sys.exit()
 
                     # Use 'Search', 'Search For', 'Define', 'who is' or 'what is' to find any definition online.
@@ -517,27 +536,10 @@ class ava:
                                         break
 
                             listlen = len(commlist)
-                            if (((commlist[0] == 'Define') or (commlist[0] == 'Search')) and (listlen <= 1)) or (((
-                                                                                                                          commlist[
-                                                                                                                              0] == 'What' and
-                                                                                                                          commlist[
-                                                                                                                              1] == 'Is') or (
-                                                                                                                          commlist[
-                                                                                                                              0] == 'Who' and
-                                                                                                                          commlist[
-                                                                                                                              1] == 'Is') or (
-                                                                                                                          commlist[
-                                                                                                                              0] == 'Search' and
-                                                                                                                          commlist[
-                                                                                                                              1] == 'For')) and (
-                                                                                                                         listlen <= 2)):
+                            if (((commlist[0] == 'Define') or (commlist[0] == 'Search')) and (listlen <= 1)) or (((commlist[0] == 'What' and commlist[1] == 'Is') or (commlist[0] == 'Who' and commlist[1] == 'Is') or (commlist[0] == 'Search' and commlist[1] == 'For')) and (listlen <= 2)):
                                 raise
 
-                            elif (commlist[0] == 'Define') or (commlist[0] == 'Search') or (
-                                    commlist[0] == 'Search' and commlist[1] == 'For') or (
-                                    commlist[0] == 'What' and commlist[1] == 'Is') or (
-                                    commlist[0] == 'Who' and commlist[1] == 'Is') or (
-                                    commlist[0] == 'Who' and commlist[1] == 'Are'):
+                            elif (commlist[0] == 'Define') or (commlist[0] == 'Search') or (commlist[0] == 'Search' and commlist[1] == 'For') or (commlist[0] == 'What' and commlist[1] == 'Is') or (commlist[0] == 'Who' and commlist[1] == 'Is') or (commlist[0] == 'Who' and commlist[1] == 'Are'):
                                 for x in range(listlen - 1):
                                     if (commlist[x] in self.conjunctions) or (commlist[x] in self.prepositions) or (
                                             commlist[x] in self.articles):
@@ -562,7 +564,7 @@ class ava:
 
                                 try:
                                     searchstr = "_".join(commlist)
-                                    wiki_search = "https://en.wikipedia.org/wiki/" + searchstr
+                                    wiki_search = f"https://en.wikipedia.org/wiki/{searchstr}"
                                     page = requests.get(wiki_search).text
                                     soup = BeautifulSoup(page, "html.parser")
                                     html = soup.find('div', {'id': 'bodyContent'})
@@ -573,17 +575,17 @@ class ava:
                                             reply = para.text.strip()
                                             if 'refers to:' not in reply.lower():
                                                 break
-                                    print("\n" + searchstr + ":-")
-                                    print("\t" + reply + "\n")
+                                    print(f"\n{searchstr}:-")
+                                    print(f"\t{reply}\n")
                                     self.botspeak(reply)
 
                                 except:
                                     searchstr = commlist
                                     search = random.choice(self.webSearch)
                                     concSay = " ".join(searchstr)
-                                    self.botspeak(search + " about " + concSay)
+                                    self.botspeak(f"{search} about {concSay}")
                                     searchstr = "+".join(searchstr)
-                                    webbrowser.open('http://www.google.com/search?q=' + searchstr)
+                                    webbrowser.open(f'http://www.google.com/search?q={searchstr}')
                         except:
                             raise
 
@@ -591,11 +593,7 @@ class ava:
                     elif 'calculate' in comms:
                         commlist = comms.split()
                         try:
-                            if (commlist[2] == '+') or (commlist[2] == 'subtracted') or (commlist[2] == 'added') or (
-                                    commlist[2] == 'times') or (commlist[2] == 'multiplied') or (
-                                    commlist[2] == 'divided') or (commlist[2] == 'into') or (commlist[2] == 'upon') or (
-                                    commlist[2] == 'minus') or (commlist[2] == 'by') or (commlist[2] == 'x') or (
-                                    commlist[2] == '-') or (commlist[2] == '/'):
+                            if (commlist[2] == '+') or (commlist[2] == 'subtracted') or (commlist[2] == 'added') or (commlist[2] == 'times') or (commlist[2] == 'multiplied') or (commlist[2] == 'divided') or (commlist[2] == 'into') or (commlist[2] == 'upon') or (commlist[2] == 'minus') or (commlist[2] == 'by') or (commlist[2] == 'x') or (commlist[2] == '-') or (commlist[2] == '/'):
                                 opr = commlist[2]
 
                                 # Basic arithmetic calculations -
@@ -605,41 +603,41 @@ class ava:
                                         n1 = str(num1)
                                         n2 = str(num2)
                                         sol = str(res)
-                                        reply = ('The sum would be ' + sol)
+                                        reply = f'The sum would be {sol}'
                                         self.botspeak(reply)
-                                        print(self.botname + " : " + n1 + ' + ' + n2 + ' = ' + sol + "\n")
+                                        print(f"{self.botname}: {n1} + {n2} = {sol}\n")
 
                                     elif (opr == '-') or (opr == 'minus') or (opr == 'subtracted'):
                                         res = num1 - num2
                                         n1 = str(num1)
                                         n2 = str(num2)
                                         sol = str(res)
-                                        reply = ('The difference would be ' + sol)
+                                        reply = f'The difference would be {sol}'
                                         self.botspeak(reply)
-                                        print(self.botname + " : " + n1 + ' - ' + n2 + ' = ' + sol + "\n")
+                                        print(f"{self.botname}: {n1} - {n2} = {sol}\n")
 
                                     elif (opr == 'x') or (opr == 'into') or (opr == 'multiplied') or (opr == 'times'):
                                         res = num1 * num2
                                         n1 = str(num1)
                                         n2 = str(num2)
                                         sol = str(res)
-                                        reply = ('The product would be ' + sol)
+                                        reply = f'The product would be {sol}'
                                         self.botspeak(reply)
-                                        print(self.botname + " : " + n1 + ' x ' + n2 + ' = ' + sol + "\n")
+                                        print(f"{self.botname}: {n1} x {n2} = {sol}\n")
 
                                     elif (opr == '/') or (opr == 'divided') or (opr == 'upon') or (opr == 'by'):
                                         res = num1 / num2
                                         n1 = str(num1)
                                         n2 = str(num2)
                                         sol = str(res)
-                                        reply = ('The result of division would be ' + sol)
+                                        reply = f'The result of division would be {sol}'
                                         self.botspeak(reply)
-                                        print(self.botname + " : " + n1 + ' / ' + n2 + ' = ' + sol + "\n")
+                                        print(f"{self.botname}: {n1} / {n2} = {sol}\n")
 
                                     else:
                                         reply = "Only four basic arithmetic operations allowed right now..."
                                         self.botspeak(reply)
-                                        print(reply + "\n")
+                                        print(f"{reply}\n")
 
                                 if (commlist[3] == 'to') or (commlist[3] == 'by') or (commlist[3] == 'with'):
                                     oprprep = commlist[3]
@@ -655,7 +653,7 @@ class ava:
                             print('Sorry, couldn\'t understand that...\nPlease try again...')
 
                     else:
-                        print(self.botname + " =>\n" + "You said : '" + comms + "'\n")
+                        print(f"self.botname =>\nYou said : '{comms}'\n")
 
                 except sr.UnknownValueError:
                     print('Sorry, couldn\'t understand that... \nPlease try again...')

@@ -5,3 +5,4 @@ PyAutoGUI
 requests
 beautifulsoup4
 pyaudio
+psutil
